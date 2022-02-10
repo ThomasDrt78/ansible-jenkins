@@ -1,3 +1,7 @@
 ---
 # vars 
-pkg: nginx
+ pkg: nginx
+
+ sites:
+  - ivoire.local
+  - pourpre.local
