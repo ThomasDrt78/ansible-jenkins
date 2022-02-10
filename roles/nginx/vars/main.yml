@@ -1,7 +1,5 @@
 ---
 # vars 
- pkg: nginx
-
  sites:
   - ivoire.local
   - pourpre.local
