@@ -15,3 +15,52 @@
     src: index.html.j2
     dest: /var/www/html/index.html
 
+- name: "Creation du répertoire pour {{ item }}"
+     file:
+      path: "/var/www/{{ item }}/html"
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+     loop:
+      "{{ sites }}"
+
+   - name: "Copie des fichiers html pour {{ site }}"
+     template:
+      src: "index.j2"
+      dest: "/var/www/{{ item }}/html/index.html"
+     loop:
+      "{{ sites }}"
+
+
+   - name: "Creation des repertoires pour les hotes virtuels"
+     file:
+      path: "/etc/nginx/sites-{{ item }}"
+      state: directory
+      mode: '0755'
+      owner: root
+      group: root
+     loop:
+      - available
+      - enabled
+
+   - name: "insertion de la ligne /etc/nginx/sites-enabled/.conf"
+     lineinfile:
+      path: "/etc/nginx/nginx.conf"
+      insertbefore: "conf;$"
+      line: "    include /etc/nginx/sites-enabled/.conf;"
+
+   - name: "Creation des fichiers de configuration des sites web pour {{ site }}"
+     template:
+      src: "serveur.conf.j2"
+      dest: "/etc/nginx/sites-available/{{ item }}.conf"
+     loop:
+      "{{ sites }}"
+
+   - name: "Creation du lien available-enabled"
+     file:
+      src: "/etc/nginx/sites-available/{{ item }}.conf"
+      dest: "/etc/nginx/sites-enabled/{{ item }}.conf"
+      state: link
+     loop:
+      "{{ sites }}"
